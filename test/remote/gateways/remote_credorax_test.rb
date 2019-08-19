@@ -12,7 +12,9 @@ class RemoteCredoraxTest < Test::Unit::TestCase
       order_id: '1',
       currency: 'EUR',
       billing_address: address,
-      description: 'Store Purchase'
+      description: 'Store Purchase',
+      processor: 'TPR',
+      processor_merchant_id: 'crxtest1'
     }
   end
 
