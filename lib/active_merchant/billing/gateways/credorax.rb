@@ -272,6 +272,28 @@ module ActiveMerchant #:nodoc:
           add_3d_secure_1_data(post, options)
         elsif options[:three_d_secure]
           add_normalized_3d_secure_2_data(post, options)
+        elsif options[:execute_threed]
+          three_ds_2_options = options[:three_ds_2]
+          browser_info = three_ds_2_options[:browser_info]
+          post[:'3ds_channel'] = '02'
+          post[:'3ds_redirect_url'] = three_ds_2_options[:notification_url]
+          post[:'3ds_challenge_window_size'] = options[:three_ds_challenge_window_size]
+          post[:d5] = browser_info[:user_agent]
+          post[:'3ds_browsertz'] = browser_info[:timezone]
+          post[:'3ds_browserscreenwidth'] = browser_info[:width]
+          post[:'3ds_browserscreenheight'] = browser_info[:height]
+          post[:'3ds_browsercolordepth'] = browser_info[:depth]
+          post[:d6] = browser_info[:language]
+          post[:'3ds_browserjavaenabled'] = browser_info[:java]
+          post[:'3ds_browseracceptheader'] = browser_info[:accept_header]
+          if (shipping_address = options[:shipping_address])
+            post[:'3ds_shipaddrstate'] = shipping_address[:state]
+            post[:'3ds_shipaddrpostcode'] = shipping_address[:zip]
+            post[:'3ds_shipaddrline2'] = shipping_address[:address2]
+            post[:'3ds_shipaddrline1'] = shipping_address[:address1]
+            post[:'3ds_shipaddrcountry'] = shipping_address[:country]
+            post[:'3ds_shipaddrcity'] = shipping_address[:city]
+          end
         end
       end
 
