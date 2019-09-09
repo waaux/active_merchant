@@ -7,6 +7,8 @@ class RemoteDecidirTest < Test::Unit::TestCase
 
     @amount = 100
     @credit_card = credit_card('4507990000004905')
+    @cabal_credit_card = credit_card('5896570000000008')
+    @naranja_credit_card = credit_card('5895627823453005')
     @declined_card = credit_card('4000300011112220')
     @options = {
       order_id: SecureRandom.uuid,
@@ -17,6 +19,20 @@ class RemoteDecidirTest < Test::Unit::TestCase
 
   def test_successful_purchase
     response = @gateway_for_purchase.purchase(@amount, @credit_card, @options)
+    assert_success response
+    assert_equal 'approved', response.message
+    assert response.authorization
+  end
+
+  def test_successful_purchase_with_cabal
+    response = @gateway_for_purchase.purchase(@amount, @cabal_credit_card, @options)
+    assert_success response
+    assert_equal 'approved', response.message
+    assert response.authorization
+  end
+
+  def test_successful_purchase_with_naranja
+    response = @gateway_for_purchase.purchase(@amount, @naranja_credit_card, @options)
     assert_success response
     assert_equal 'approved', response.message
     assert response.authorization
@@ -42,8 +58,8 @@ class RemoteDecidirTest < Test::Unit::TestCase
   def test_failed_purchase
     response = @gateway_for_purchase.purchase(@amount, @declined_card, @options)
     assert_failure response
-    assert_equal 'TARJETA INVALIDA', response.message
-    assert_match Gateway::STANDARD_ERROR_CODE[:invalid_number], response.error_code
+    assert_equal 'PEDIR AUTORIZACION', response.message
+    assert_match Gateway::STANDARD_ERROR_CODE[:call_issuer], response.error_code
   end
 
   def test_failed_purchase_with_invalid_field
@@ -68,8 +84,8 @@ class RemoteDecidirTest < Test::Unit::TestCase
   def test_failed_authorize
     response = @gateway_for_auth.authorize(@amount, @declined_card, @options)
     assert_failure response
-    assert_equal 'TARJETA INVALIDA', response.message
-    assert_match Gateway::STANDARD_ERROR_CODE[:invalid_number], response.error_code
+    assert_equal 'PEDIR AUTORIZACION', response.message
+    assert_match Gateway::STANDARD_ERROR_CODE[:call_issuer], response.error_code
   end
 
   def test_failed_partial_capture
@@ -143,7 +159,7 @@ class RemoteDecidirTest < Test::Unit::TestCase
   def test_failed_verify
     response = @gateway_for_auth.verify(@declined_card, @options)
     assert_failure response
-    assert_match %r{TARJETA INVALIDA}, response.message
+    assert_match %r{PEDIR AUTORIZACION}, response.message
   end
 
   def test_invalid_login
