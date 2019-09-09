@@ -120,15 +120,15 @@ module ActiveMerchant #:nodoc:
       end
 
       def set_payment_method_id(credit_card)
-	if options[:payment_method_id]
-	  options[:payment_method_id].to_i
-	elsif CreditCard.brand?(credit_card.number) == "cabal"
-	  63
-	elsif CreditCard.brand?(credit_card.number) == "naranja"
-	  24
-	else
-	  1
-	end
+        if options[:payment_method_id]
+          options[:payment_method_id].to_i
+        elsif CreditCard.brand?(credit_card.number) == "cabal"
+          63
+        elsif CreditCard.brand?(credit_card.number) == "naranja"
+          24
+        else
+          1
+        end
       end
 
       def add_invoice(post, money, options)
